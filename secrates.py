@@ -1,0 +1,1 @@
+databade_url = "mysql://root:ieTvKYsZfpzJOUQWAlGRoneGaEymYuuu@monorail.proxy.rlwy.net:42550/railway"
