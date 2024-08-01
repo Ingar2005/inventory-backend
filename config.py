@@ -4,8 +4,9 @@ from sqlalchemy.orm import DeclarativeBase
 from flask_cors import CORS
 from secrates import databade_url
 app = Flask(__name__)
+app = Flask(__name__)
 CORS(app)
-
+database_url = os.enviro.get("DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = databade_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] =  False
 
