@@ -1,5 +1,6 @@
 from flask import request,jsonify
-from config import app,db
+from config import app,SessionLocal
+from config import db
 from modles import *
 import os
 store_id = 1
