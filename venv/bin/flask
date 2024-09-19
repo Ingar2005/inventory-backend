@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/home/ingar/Desktop/projects/inventory system/backend/venv/bin/python3" "$0" "$@"
+'''exec' "/home/ingar/Desktop/trial/inventory system/backend/venv/bin/python3" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re

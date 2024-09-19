@@ -95,7 +95,7 @@ def get_logs():
 # - new supplier ~~~
 # - new catagory
 # - new store
-# - new room 
+# - new room
 
 @app.route("/create_item", methods =["POST"])
 def create_item():
@@ -115,7 +115,7 @@ def create_item():
         res += "must use a real supplier "
     if not new_incident:
         res += "must contain incident level "
-    
+
     if len(res) == 0 :
         new_item = items(item_name=new_item_name, supplier_id=supplier.id, incident=new_incident) # type: ignore
         try:
@@ -123,7 +123,7 @@ def create_item():
             db.session.commit()
         except Exception as e:
             return jsonify({"message": str(e)}),400
-        
+
         return jsonify({"message":"item created"}),201
     else:
         return jsonify({"message":res}), 400
@@ -133,7 +133,7 @@ def create_stock():
     level = request.json.get("level")
     room_name = request.json.get("roomName")
     item_name = request.json.get("itemName")
-    
+
     response = ""
     accept = True
     item_filter= items.query.filter_by(item_name = item_name).first()
@@ -146,14 +146,14 @@ def create_stock():
     elif unique != None:
         accept = False
         response +="must use unique item (item not used already) "
-    
+
     if room_valid == None:
         accept = False
-        response +="must use existing room "    
+        response +="must use existing room "
 
     if accept == False:
         return jsonify({"message":response}),400
-    
+
     item_id = item_filter.id #becouse item filter would have returned the object
     room_id = room_valid.id
     new_stock = stock(item_id = item_id, level = level, room_id = room_id, store_id= store_id)
@@ -162,8 +162,8 @@ def create_stock():
         db.session.commit()
     except Exception as e:
         return jsonify({"message": str(e)}),400
-    
-    return jsonify({"message":"stock created"}),201 
+
+    return jsonify({"message":"stock created"}),201
 
 @app.route("/create_supplier", methods=["POST"])
 def create_supplier():
@@ -181,19 +181,19 @@ def create_supplier():
     if not supplier_name:
         return jsonify({"message":"must contain a supplier name"})
     new_supplier = suppliers(supplier_name = supplier_name, lead=lead, monday= monday,tuesday=tuesday ,wenesday=wenesday,thursday=thursday, friday=friday,sataday=sataday,sunday=sunday)
-    
+
     try:
         db.session.add(new_supplier)
         db.session.commit()
     except Exception as e:
         return jsonify({"message": str(e)}),400
-    
-    return jsonify({"message":"supplier created"}),201 
+
+    return jsonify({"message":"supplier created"}),201
 
 @app.route("/create_room", methods= ["POST"])
 def create_room():
     room_name = request.json.get("roomName")
-    store_id =1  
+    store_id =1
 
     if not room_name:
         return jsonify({"message":"must contain a room name"})
@@ -206,8 +206,8 @@ def create_room():
         db.session.commit()
     except Exception as e:
         return jsonify({"message": str(e)}),400
-    
-    return jsonify({"message":"room created"}),201 
+
+    return jsonify({"message":"room created"}),201
 
 def new_log(stock_id,before,after):
     log = logs(stock_id = stock_id, amount_before=before,amount_after =after)
@@ -217,13 +217,13 @@ def new_log(stock_id,before,after):
         db.session.commit()
     except:
             return False
-    
+
     return True
 
 
-#UPDATE 
+#UPDATE
 #
-# 
+#
 # item ~~
 # stock ~~
 # log
@@ -236,10 +236,10 @@ def new_log(stock_id,before,after):
 @app.route("/update_item/<int:item_id>", methods= ["PATCH"])
 def update_item(item_id):
     item = items.query.get(item_id)
-    
+
     if not item:
         return jsonify({"message":"item not found"}),404
-    
+
     data = request.json
 
     supplier_id = suppliers.query.filter_by(supplier_name = data.get("supplier")).first().id
@@ -248,7 +248,7 @@ def update_item(item_id):
         there = items.query.filter_by(item_name=item_name).first()
         if there:
             return jsonify({"message":"please use a unique item name"}),400
-            
+
     item.item_name = data.get("itemName",item.item_name)
     item.supplier_id = data.get(supplier_id,item.supplier_id)
     item.incident = data.get("incidentLevel",item.incident)
@@ -262,7 +262,7 @@ def update_stock(stock_id):
 
     if not stock_item:
         return jsonify({"message":"stock item not found"}),404
-    
+
     data = request.json
 
     new_room =  rooms.query.filter_by(room_name = data.get("roomName")).first()
@@ -307,7 +307,7 @@ def update_room(room_id):
 
     if not room:
         return jsonify({"message":"room not found"}),404
-    
+
     elif ( rooms.query.filter_by(room_name = data.get("roomName")).first()):
         return jsonify({"message":"name already in use"}),404
 
@@ -332,7 +332,7 @@ def delete_item(item_id):
     item = items.query.get(item_id)
     if not item:
         return ({"message":"item not found"}),400
-    
+
     stock_items = item.stock
     for stock in stock_items:
         delete_stock(stock.id)
@@ -348,7 +348,7 @@ def delete_stock(stock_id):
 
     if not stock_item:
         return ({"message":"stock not found"}),400
-    
+
     log_list = logs.query.filter_by(stock_id = stock_item.id).all()
     for log in log_list:
         db.session.delete(log)
@@ -384,7 +384,7 @@ def delete_room(room_id):
     for stock in referential_integrity:
         stock.room_id = generic.id
         db.session.commit()
-        
+
     db.session.delete(room_item)
     db.session.commit()
 
@@ -425,6 +425,9 @@ def hello_world():
 
     return 'Hello, World!'
 
+with app.app_context():
+    db.create_all()
+    print("Tables created!")
 
 if __name__ == "__main__":
     with app.app_context():
